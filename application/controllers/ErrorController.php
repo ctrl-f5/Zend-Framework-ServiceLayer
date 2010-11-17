@@ -4,7 +4,7 @@ class ErrorController extends Zend_Controller_Action
 {
 	public function errorAction()
 	{
-		$errors = $this->_getParam('error_handler');
+	    $errors = $this->_getParam('error_handler');
 
         //log to php error file (usefull for debugging controller testcases)
         if (in_array(APPLICATION_ENV, array('development', 'testing'))

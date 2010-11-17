@@ -17,7 +17,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
 )));
 
 // include general macq functions
-require_once 'Macq/Functions.php';
+require_once 'Ctrl/Functions.php';
 
 // Create application, bootstrap, and run
 require_once 'Zend/Application.php';
