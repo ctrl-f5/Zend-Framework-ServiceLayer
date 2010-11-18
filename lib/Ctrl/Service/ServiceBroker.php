@@ -5,9 +5,17 @@ namespace Ctrl\Service;
 class ServiceBroker implements IServiceBroker
 {
     private static $_instance;
-    
+
     protected $_options = array();
     protected $_services = array();
+
+    public static function getInstance()
+    {
+        if (!(self::$_instance instanceof ServiceBroker)) {
+            self::$_instance = new ServiceBroker();
+        }
+        return self::$_instance;
+    }
 
     /**
      * Fetches a service from internal storage. Creates the service with $options if it does not exist yet
@@ -24,12 +32,12 @@ class ServiceBroker implements IServiceBroker
         if (!is_string($type) || !is_subclass_of($type, '\\Ctrl\\Service\\Service')) {
             throw new InvalidArgumentException('$type must be a classname of a class inheriting from \\Ctrl\\Service\\Service ("' . $type . '" given)');
         }
-        
+
         //check if we know an instance, create one if not
         if (!array_key_exists($type, $this->_services)) {
             $this->_services[$type] = $type::factory($options);
         }
-        
+
         //return known instance
         return $this->_services[$type];
     }
@@ -46,16 +54,8 @@ class ServiceBroker implements IServiceBroker
         if (!is_string($type) || !is_subclass_of($type, '\\Ctrl\\Service\\Service')) {
             throw new InvalidArgumentException('$type must be a classname of a class inheriting from \\Ctrl\\Service\\Service ("' . $type . '" given)');
         }
-        
-        return $type::factory($options);
-    }
 
-    public static function getInstance()
-    {
-        if (!(self::$_instance instanceof ServiceBroker)) {
-            self::$_instance = new ServiceBroker();
-        }
-        return self::$_instance;
+        return $type::factory($options);
     }
 
     public function setOptions(array $options)
