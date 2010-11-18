@@ -1,0 +1,52 @@
+<h1>Testing service creation</h1>
+
+<?php if (!$this->exception):?>
+
+<h2>Using the factory method:</h2>
+
+<p>
+<pre>Log_Service_Test::factory(array('test' =&gt; 'my first service'));</pre><br />
+
+<pre style="background-color: #EFEFEF; padding: 5px;">
+<?php var_dump($this->service1); ?>
+</pre>
+</p>
+
+<h2>Using the service broker ($this == controller extending from \Ctrl\Controller\Action)</h2>
+
+<h3>First call sets the options</h3>
+
+<p>
+<pre>$this-&gt;_services->getService(Log_Service_Test::getType(), array('optionsTest' =&gt; 'viaBroker! &gt; these options will be set'));</pre><br />
+
+<pre style="background-color: #EFEFEF; padding: 5px;">
+<?php var_dump($this->service2); ?>
+</pre>
+</p>
+
+<h3>Second call ignores the options</h3>
+
+<p>
+<pre>$this-&gt;_services->getService(Log_Service_Test::getType(), array('second' =&gt; 'viaBroker! &gt; these options will be ignored'));</pre><br />
+
+<pre style="background-color: #EFEFEF; padding: 5px;">
+<?php var_dump($this->service3); ?>
+</pre>
+</p>
+
+<h3>Call local ignores previously registered services, and thus sets the options</h3>
+
+<p>
+<pre>$this-&gt;_services->getLocalService(Log_Service_Test::getType(), array('third' =&gt; 'viaBroker! --local'));</pre><br />
+
+<pre style="background-color: #EFEFEF; padding: 5px;">
+<?php var_dump($this->service4); ?>
+</pre>
+</p>
+
+<?php else: ?>
+<h2>Whoops, something went wrong</h2>
+
+<p><pre><?php var_dump($this->exception); ?></pre></p>
+
+<?php endif;?>
