@@ -8,6 +8,8 @@ class ServiceBroker implements IServiceBroker
 
     protected $_options = array();
     protected $_services = array();
+    protected $_factories = array();
+    protected $_defaultServiceKey = 'default';
 
     public static function getInstance()
     {
@@ -15,6 +17,13 @@ class ServiceBroker implements IServiceBroker
             self::$_instance = new ServiceBroker();
         }
         return self::$_instance;
+    }
+
+    public function __construct()
+    {
+        $this->setOptions(array(
+            'defaultServiceFactory' => new \Ctrl\Service\Factory\ServiceFactory()
+        ));
     }
 
     /**
@@ -35,7 +44,8 @@ class ServiceBroker implements IServiceBroker
 
         //check if we know an instance, create one if not
         if (!array_key_exists($type, $this->_services)) {
-            $this->_services[$type] = $type::factory($options);
+            $factory = $this->getFactory($type);
+            $this->_services[$type] = $factory->buildService($type, $options);
         }
 
         //return known instance
@@ -58,9 +68,41 @@ class ServiceBroker implements IServiceBroker
         return $type::factory($options);
     }
 
+    /**
+     * @param unknown_type $className
+     * @throws Exception
+     * @return \Ctrl\Service\Factory\IServiceFactory
+     */
+    public function getFactory($className)
+    {
+        foreach ($this->_factories as $ns => $f) {
+            if (strpos($className, $ns) === 0) return $f;
+        }
+        if (!array_key_exists($this->_defaultServiceKey, $this->_factories)) {
+            throw new Exception('No factory found for class and no default factory set');
+        }
+        return $this->_factories[$this->_defaultServiceKey];
+    }
+
+    public function registerServiceFactory($namespace, \Ctrl\Service\Factory\IServiceFactory $serviceFactory)
+    {
+        $this->_factories[$namespace] = $serviceFactory;
+        return $this;
+    }
+
     public function setOptions(array $options)
     {
+        if (array_key_exists('defaultServiceKey', $options)) {
+            $this->_defaultServiceKey = $options['defaultServiceKey'];
+        }
+        if (array_key_exists('defaultServiceFactory', $options)) {
+            if (!($options['defaultServiceFactory'] instanceof \Ctrl\Service\Factory\IServiceFactory)) {
+                throw new InvalidArgumentException('defaultServiceFactory must implement \\Ctrl\\Service\\Factory\\IServiceFactory');
+            }
+            $this->_factories[$this->_defaultServiceKey] = $options['defaultServiceFactory'];
+        }
         $this->_options = $options;
+        return $this;
     }
 
     public function getOptions()

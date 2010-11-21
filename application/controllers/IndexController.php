@@ -4,7 +4,10 @@ class IndexController extends \Ctrl\Controller\Action
 {
     public function indexAction()
     {
-
+        echo 'test';
+        $factory = new \Ctrl\Service\Factory\ServiceFactory();
+        var_dump($factory);
+        echo 'test';
     }
 
     public function testServicesAction()
