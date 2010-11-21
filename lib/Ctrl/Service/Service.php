@@ -20,7 +20,7 @@ abstract class Service implements IService
      */
     public static function factory(array $options = array())
     {
-        $class = get_called_class();
+        $class = self::getType();
         return new $class($options);
     }
 
@@ -34,13 +34,10 @@ abstract class Service implements IService
         return $this->_options;
     }
 
-    protected function init()
-    {
-
-    }
-
     public static function getType()
     {
         return get_called_class();
     }
+
+    protected function init() {}
 }
